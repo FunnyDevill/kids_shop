@@ -4,48 +4,61 @@ class Cart {
         this.init();
     }
 
-    init() {
-        this.render();
-        this.updateCounter();
-    }
+    async processCheckout() {
+        try {
+            // Валидация
+            if (this.items.length === 0) {
+                throw new Error('Корзина пуста');
+            }
 
-    addItem(product) {
-        const existing = this.items.find(item => item.id === product.id);
-        if (existing) {
-            existing.quantity++;
-        } else {
-            this.items.push({
-                ...product,
-                quantity: 1
-            });
+            // Эмуляция запроса
+            const response = await this.mockApiRequest();
+
+            if (response.success) {
+                this.items = [];
+                this.save();
+                App.showNotification('Заказ оформлен! Номер: ' + response.orderId, 'success');
+                this.closeCart();
+                return true;
+            }
+        } catch (error) {
+            App.showNotification(error.message, 'error');
+            return false;
         }
-        this.save();
     }
 
-    save() {
-        localStorage.setItem('cart', JSON.stringify(this.items));
-        this.render();
-        this.updateCounter();
+    mockApiRequest() {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve({
+                    success: true,
+                    orderId: 'MD-' + Math.floor(Math.random() * 1000000)
+                });
+            }, 1500);
+        });
     }
 
-    render() {
-        const container = document.querySelector('.cart-items');
-        container.innerHTML = this.items.map(item => `
-            <div class="cart-item" data-id="${item.id}">
-                <div class="item-image" style="background-image: url('${item.image}')"></div>
-                <div class="item-details">
-                    <h4>${item.name}</h4>
-                    <div class="item-price">${item.price} ₽</div>
-                    <div class="item-controls">
-                        <button class="btn-quantity minus">-</button>
-                        <span>${item.quantity}</span>
-                        <button class="btn-quantity plus">+</button>
-                    </div>
-                </div>
-                <button class="remove-btn">×</button>
-            </div>
-        `).join('');
-        
-        this.updateTotal();
+    setupListeners() {
+        // Оформление заказа
+        document.querySelector('.checkout-btn')?.addEventListener('click', async () => {
+            const btn = document.querySelector('.checkout-btn');
+            btn.disabled = true;
+            btn.textContent = 'Обработка...';
+            
+            await this.processCheckout();
+            
+            btn.disabled = false;
+            btn.textContent = 'Оформить заказ';
+        });
+
+        // Динамические элементы
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn')) {
+                const itemId = parseInt(e.target.closest('.cart-item').dataset.id);
+                this.removeItem(itemId);
+            }
+        });
     }
 }
+
+const cart = new Cart();
