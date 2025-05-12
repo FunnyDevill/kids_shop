@@ -1,0 +1,33 @@
+<aside id="cart-sidebar" 
+       class="cart-sidebar" 
+       aria-label="Корзина покупок"
+       aria-modal="true"
+       role="dialog"
+       hidden>
+  <div class="cart-header">
+    <h2 class="cart-title">Ваша корзина</h2>
+    <button class="close-btn" 
+            aria-label="Закрыть корзину"
+            data-cart-close>
+      &times;
+    </button>
+  </div>
+
+  <div class="cart-content">
+    <div class="cart-items" role="list"></div>
+    
+    <div class="cart-summary">
+      <dl class="total-price">
+        <dt>Итого:</dt>
+        <dd aria-live="polite">0 ₽</dd>
+      </dl>
+      
+      <button class="checkout-btn" 
+              type="button"
+              data-checkout
+              disabled>
+        Оформить заказ
+      </button>
+    </div>
+  </div>
+</aside>

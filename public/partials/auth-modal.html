@@ -1,0 +1,95 @@
+<div id="auth-modal" 
+     class="auth-modal" 
+     role="dialog"
+     aria-labelledby="auth-modal-title"
+     aria-hidden="true"
+     hidden>
+  <div class="auth-modal-content">
+    <button class="close-btn" 
+            aria-label="Закрыть модальное окно"
+            data-auth-close>
+      &times;
+    </button>
+
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab active" 
+              role="tab"
+              aria-controls="login-panel"
+              data-tab="login">
+        Вход
+      </button>
+      <button class="auth-tab" 
+              role="tab"
+              aria-controls="register-panel"
+              data-tab="register">
+        Регистрация
+      </button>
+    </div>
+
+    <div class="auth-panels">
+      <div id="login-panel" 
+           class="auth-panel active" 
+           role="tabpanel"
+           aria-labelledby="login-tab">
+        <form id="login-form" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" 
+                   id="login-email" 
+                   required
+                   autocomplete="email"
+                   data-auth-email>
+          </div>
+          
+          <div class="form-group">
+            <label for="login-password">Пароль</label>
+            <input type="password" 
+                   id="login-password" 
+                   required
+                   autocomplete="current-password"
+                   data-auth-password>
+          </div>
+          
+          <button type="submit" class="btn primary-btn">Войти</button>
+        </form>
+      </div>
+
+      <div id="register-panel" 
+           class="auth-panel" 
+           role="tabpanel"
+           aria-labelledby="register-tab">
+        <form id="register-form" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="register-name">Имя</label>
+            <input type="text" 
+                   id="register-name" 
+                   required
+                   autocomplete="name"
+                   data-register-name>
+          </div>
+          
+          <div class="form-group">
+            <label for="register-email">Email</label>
+            <input type="email" 
+                   id="register-email" 
+                   required
+                   autocomplete="email"
+                   data-register-email>
+          </div>
+          
+          <div class="form-group">
+            <label for="register-password">Пароль</label>
+            <input type="password" 
+                   id="register-password" 
+                   required
+                   minlength="6"
+                   autocomplete="new-password"
+                   data-register-password>
+          </div>
+          
+          <button type="submit" class="btn primary-btn">Зарегистрироваться</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<header class="main-header" role="banner">
+    <div class="container">
+      <nav class="navbar" aria-label="Основная навигация">
+        <a href="/" class="logo" aria-label="Логотип Midnight Dream">
+          <img src="/images/logo.svg" alt="Midnight Dream" width="180" height="40">
+        </a>
+  
+        <ul class="nav-menu" role="menubar">
+          <li role="none">
+            <a href="/collections" class="nav-link" role="menuitem" data-router>Коллекции</a>
+          </li>
+          <li role="none">
+            <a href="/about" class="nav-link" role="menuitem" data-router>О нас</a>
+          </li>
+          <li role="none">
+            <a href="/blog" class="nav-link" role="menuitem" data-router>Блог</a>
+          </li>
+        </ul>
+  
+        <div class="user-actions">
+          <button class="auth-btn icon-btn" 
+                  aria-label="Управление аккаунтом"
+                  aria-haspopup="dialog"
+                  data-auth-trigger>
+            <svg aria-hidden="true">
+              <use href="#user-icon"></use>
+            </svg>
+          </button>
+          
+          <button class="cart-btn icon-btn" 
+                  aria-label="Корзина"
+                  data-cart-trigger>
+            <svg aria-hidden="true">
+              <use href="#cart-icon"></use>
+            </svg>
+            <span class="cart-counter" aria-live="polite"></span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
