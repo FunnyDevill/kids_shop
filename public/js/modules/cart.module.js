@@ -1,11 +1,11 @@
 import { Store } from '../core/store.js';
 import { API } from '../core/api.js';
-import { CartValidator } from '../utils/cart-validator.js';
+import { validateCart } from '../utils/cart-validator.js';
 
 export class CartModule {
   constructor(store) {
     this.store = store;
-    this.validator = new CartValidator();
+    this.validator = new validateCart();
     this.init();
   }
 
