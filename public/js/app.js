@@ -4,7 +4,7 @@ import { ComponentLoader } from './core/component-loader.js';
 import { Router } from './core/router.js';
 import { CartModule } from './modules/cart.module.js';
 import { AuthModule } from './modules/auth.module.js';
-import { routes } from './config/routes.js';
+import { routes } from './routes.js';
 
 // Главный класс приложения
 class App {
