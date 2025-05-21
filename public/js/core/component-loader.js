@@ -1,54 +1,122 @@
-export class ComponentLoader {
-  static components = {
-  header: '/src/partials/header.html',
-  footer: '/src/partials/footer.html',
-  authModal: '/src/partials/auth-modal.html',
-  cartSidebar: '/src/partials/cart-sidebar.html'
-  };
+/**
+ * Dynamic Component Loader
+ * Загружает и инициализирует компоненты на странице
+ */
+class ComponentLoader {
+  constructor(options = {}) {
+    // Настройки по умолчанию
+    this.defaults = {
+      componentAttr: 'data-component',
+      loadedAttr: 'data-component-loaded',
+      componentsPath: '/static/js/components/'
+    };
 
-  static loadedComponents = new Set();
+    // Слияние настроек
+    this.settings = { ...this.defaults, ...options };
 
-  static async loadAll() {
-    try {
-      await Promise.all(
-        Object.entries(this.components).map(
-          ([id, path]) => this.load(id, path)
-        )
-      );
-      return true;
-    } catch (error) {
-      console.error(`Component load failed: ${error.message}`);
-      throw error; // Перебрасываем ошибку для обработки выше
+    // Зарегистрированные компоненты
+    this.componentsRegistry = new Map();
+
+    // Инициализация
+    this.init();
+  }
+
+  init() {
+    // Загрузка компонентов при полной загрузке DOM
+    if (document.readyState === 'complete') {
+      this.loadComponents();
+    } else {
+      document.addEventListener('DOMContentLoaded', () => this.loadComponents());
     }
   }
 
-  static async load(id, path) {
-    if (this.loadedComponents.has(id)) {
-      console.warn(`Component ${id} already loaded`);
-      return;
-    }
+  /**
+   * Регистрация компонента
+   * @param {string} name - Имя компонента
+   * @param {class} componentClass - Класс компонента
+   */
+  registerComponent(name, componentClass) {
+    this.componentsRegistry.set(name, componentClass);
+  }
 
-    const response = await fetch(path);
-    if (!response.ok) {
-      throw new Error(`Failed to load ${path}: ${response.status} ${response.statusText}`);
-    }
+  /**
+   * Загрузка всех компонентов на странице
+   */
+  async loadComponents() {
+    const components = document.querySelectorAll(`[${this.settings.componentAttr}]`);
 
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('text/html')) {
-      throw new Error(`Invalid content type for ${path}: expected text/html`);
-    }
+    for (const element of components) {
+      if (element.hasAttribute(this.settings.loadedAttr)) continue;
 
-    const html = await response.text();
-    if (!html.trim()) {
-      throw new Error(`Empty content loaded for ${path}`);
+      const componentName = element.getAttribute(this.settings.componentAttr);
+      await this.loadComponent(element, componentName);
     }
+  }
 
-    const target = document.getElementById(id);
-    if (!target) {
-      throw new Error(`Element #${id} not found`);
+  /**
+   * Загрузка конкретного компонента
+   * @param {HTMLElement} element - DOM элемент
+   * @param {string} componentName - Имя компонента
+   */
+  async loadComponent(element, componentName) {
+    try {
+      // Проверка регистрации компонента
+      if (this.componentsRegistry.has(componentName)) {
+        const ComponentClass = this.componentsRegistry.get(componentName);
+        new ComponentClass(element);
+        element.setAttribute(this.settings.loadedAttr, 'true');
+        return;
+      }
+
+      // Динамическая загрузка компонента
+      const modulePath = `${this.settings.componentsPath}${componentName}.component.js`;
+      const module = await import(modulePath);
+      
+      if (module.default) {
+        this.registerComponent(componentName, module.default);
+        new module.default(element);
+        element.setAttribute(this.settings.loadedAttr, 'true');
+      } else {
+        console.error(`Component ${componentName} has no default export`, module);
+      }
+    } catch (error) {
+      console.error(`Failed to load component ${componentName}:`, error);
     }
+  }
 
-    target.innerHTML = html;
-    this.loadedComponents.add(id);
+  /**
+   * Загрузка конкретного компонента по имени
+   * @param {string} componentName - Имя компонента
+   */
+  async loadComponentByName(componentName) {
+    const elements = document.querySelectorAll(
+      `[${this.settings.componentAttr}="${componentName}"]:not([${this.settings.loadedAttr}])`
+    );
+
+    for (const element of elements) {
+      await this.loadComponent(element, componentName);
+    }
   }
 }
+
+// Создаем экземпляр загрузчика
+const componentLoader = new ComponentLoader();
+
+// Регистрируем базовые компоненты
+componentLoader.registerComponent('cart', class {
+  constructor(element) {
+    this.element = element;
+    this.init();
+  }
+  
+  init() {
+    console.log('Cart component initialized', this.element);
+    // Реализация компонента корзины
+  }
+});
+
+// Экспорт для использования в других модулях
+export default componentLoader;
+
+// Глобальная доступность (опционально)
+window.ComponentLoader = componentLoader;
