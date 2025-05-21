@@ -105,6 +105,6 @@ export class API {
 }
 
 // Инициализация моков в разработке
-if (process.env.NODE_ENV === 'development') {
-  API.enableMockMode();
-}
+//if (process.env.NODE_ENV === 'development') {
+//  API.enableMockMode();
+//}

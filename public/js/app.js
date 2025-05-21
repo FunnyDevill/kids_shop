@@ -145,6 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Экспорт для отладки
-if (process.env.NODE_ENV === 'development') {
-  window.app = app;
-}
+//if (process.env.NODE_ENV === 'development') {
+//  window.app = app;
+//}
