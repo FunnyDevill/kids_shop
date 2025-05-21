@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Страница не найдена (404) | Kids Shop</title>
+  <style>
+    body {
+      font-family: 'Rubik', Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .error-container {
+      max-width: 600px;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 3rem;
+      color: #e74c3c;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    a {
+      display: inline-block;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    a:hover {
+      background-color: #2980b9;
+    }
+    .logo {
+      margin-bottom: 2rem;
+      max-width: 150px;
+    }
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      p { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <!-- Добавьте путь к вашему логотипу -->
+    <img src="/images/logo.svg" alt="Kids Shop" class="logo">
+
+    <h1>Ой! Страница не найдена</h1>
+    <p>Мы не смогли найти страницу, которую вы ищете. Возможно, она была перемещена или удалена.</p>
+    <p>Попробуйте начать с <a href="/">главной страницы</a> или воспользуйтесь поиском.</p>
+    
+    <a href="/">Вернуться на главную</a>
+  </div>
+
+  <!-- Подключите ваши скрипты, если нужно -->
+  <script>
+    console.log('404 Page Not Found: ' + window.location.pathname);
+  </script>
+</body>
+</html>

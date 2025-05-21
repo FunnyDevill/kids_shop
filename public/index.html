@@ -1,77 +1,42 @@
 <!DOCTYPE html>
-<html lang="ru" dir="ltr">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Интернет-магазин готической детской одежды Midnight Dream">
+  <title>Kids Shop - Детский магазин</title>
   
-  <!-- Предзагрузка критических ресурсов -->
-  <link rel="preload" href="css/style.css" as="style">
-  <link rel="preload" href="js/app.js" as="script">
-  <link rel="preload" href="images/hero-bg.webp" as="image">
+  <!-- Предзагрузка основных ресурсов с правильными атрибутами -->
+  <link rel="preload" href="/fonts/Rubik-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/images/hero-bg.webp" as="image" media="(min-width: 768px)">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   
   <!-- Основные стили -->
-  <link rel="stylesheet" href="css/style.css">
-  
-  <!-- Фавиконки -->
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  
-  <title>Midnight Dream | Готическая детская одежда</title>
+  <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-  <!-- Контейнер приложения -->
-  <div id="app">
-    <!-- Динамически загружаемые компоненты -->
-    <header id="header" role="banner"></header>
-    
-    <!-- Основное содержимое -->
+  <!-- Контейнеры для динамически загружаемых компонентов -->
+  <div id="header"></div>
+  <div id="authModal"></div>
+  <div id="cartSidebar"></div>
+  
     <main id="main-content" class="container" role="main">
       <!-- Контент будет рендериться через роутер -->
       <div class="loading-indicator" aria-live="polite">
         Загрузка...
       </div>
     </main>
-
-    <!-- Боковая панель корзины -->
-    <aside id="cart-sidebar" 
-           class="cart-sidebar"
-           aria-label="Корзина покупок"
-           aria-hidden="true">
-      <!-- Контент грузится из partials/cart-sidebar.html -->
-    </aside>
-
-    <!-- Модальное окно авторизации -->
-    <div id="auth-modal"
-         class="modal"
-         role="dialog"
-         aria-labelledby="auth-modal-title"
-         aria-hidden="true">
-      <!-- Контент грузится из partials/auth-modal.html -->
-    </div>
-
-    <!-- Подвал -->
-    <footer id="footer" role="contentinfo"></footer>
-  </div>
-
-  <!-- SVG-спрайт для иконок -->
-  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-    <symbol id="cart-icon" viewBox="0 0 24 24">
-      <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-    </symbol>
-    <!-- Другие иконки -->
-  </svg>
-
-  <!-- Скрипты -->
-  <script type="module" src="js/app.js" defer></script>
   
-  <!-- Нотификация для старых браузеров -->
-  <noscript>
-    <style>.loading-indicator{display:none;}</style>
-    <div class="noscript-warning" role="alert">
-      Для работы приложения требуется JavaScript. Пожалуйста, включите его в настройках браузера.
-    </div>
-  </noscript>
+  <div id="footer"></div>
+
+  <!-- Скрипты с правильными атрибутами -->
+  <script src="/js/utils/component-loader.js" type="module"></script>
+  <script src="/js/app.js" type="module"></script>
+  
+  <!-- Для старых браузеров -->
+  <script nomodule>
+    document.body.innerHTML = '<p>Пожалуйста, используйте современный браузер</p>';
+  </script>
 </body>
 </html>

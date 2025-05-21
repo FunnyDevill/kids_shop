@@ -1,9 +1,9 @@
 export class ComponentLoader {
   static components = {
-    header: '/partials/header.html',
-    footer: '/partials/footer.html',
-    authModal: '/partials/auth-modal.html',
-    cartSidebar: '/partials/cart-sidebar.html'
+  header: '/src/partials/header.html',
+  footer: '/src/partials/footer.html',
+  authModal: '/src/partials/auth-modal.html',
+  cartSidebar: '/src/partials/cart-sidebar.html'
   };
 
   static loadedComponents = new Set();
