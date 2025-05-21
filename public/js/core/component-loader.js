@@ -1,14 +1,10 @@
-/**
- * Dynamic Component Loader
- * Загружает и инициализирует компоненты на странице
- */
 class ComponentLoader {
   constructor(options = {}) {
     // Настройки по умолчанию
     this.defaults = {
       componentAttr: 'data-component',
       loadedAttr: 'data-component-loaded',
-      componentsPath: '/static/js/components/'
+      componentsPath: 'js/components/'
     };
 
     // Слияние настроек

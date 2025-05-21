@@ -1,7 +1,4 @@
-/**
- * Модуль корзины товаров
- */
-class CartModule {
+export class CartModule {
   constructor(options = {}) {
     // Настройки по умолчанию
     this.defaults = {
@@ -133,6 +130,3 @@ class CartModule {
     this.updateCart();
   }
 }
-
-// Экспорт для использования в других модулях
-export default CartModule;

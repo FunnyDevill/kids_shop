@@ -14,7 +14,7 @@ class App {
       cart: null
     };
     
-    this.init();
+    //this.init();
   }
 
   async init() {
@@ -23,7 +23,7 @@ class App {
       this.initializeModules();
       
       // Загрузка данных пользователя (если нужно)
-      await this.loadUserData();
+      // await this.loadUserData();
       
       // Инициализация UI
       this.setupEventListeners();
@@ -44,14 +44,14 @@ class App {
     );
   }
 
-  async loadUserData() {
-    try {
-      const user = await API.getCurrentUser();
-      this.store.commit('SET_USER', user);
-    } catch (error) {
-      console.warn('Не удалось загрузить данные пользователя:', error);
-    }
-  }
+  // async loadUserData() {
+  //   try {
+  //     const user = await API.getCurrentUser();
+  //     this.store.commit('SET_USER', user);
+  //   } catch (error) {
+  //     console.warn('Не удалось загрузить данные пользователя:', error);
+  //   }
+  // }
 
   setupEventListeners() {
     document.addEventListener('notify', (event) => {
