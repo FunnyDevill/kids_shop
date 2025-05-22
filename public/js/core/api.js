@@ -28,7 +28,17 @@ const ENV = (() => {
 export class API {
   // Мок-система
   static _mocksEnabled = false;
-  static _mockHandlers = {};
+  static _mockHandlers = {
+    '/auth/me': async () => ({
+    id: 1,
+    email: 'test@example.com',
+    name: 'Test User'
+  }),
+  };
+
+  static async getCurrentUser() {
+  return this.request('/auth/me');
+}
   
   static async request(endpoint, options = {}) {
     // Обработка моков

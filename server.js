@@ -16,6 +16,20 @@ app.use('/src', express.static(path.join(__dirname, 'src')));
 // Middleware для обработки JSON
 app.use(express.json());
 
+// Разрешите CORS и обслуживайте статические файлы
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
+app.use(express.static('public', {
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+  }
+}));
+
 // Маршруты API
 app.get('/api/products', async (req, res) => {
   try {

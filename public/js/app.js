@@ -3,55 +3,51 @@ import { API } from './core/api.js';
 import { CartModule } from './modules/cart.module.js';
 import { validateCart, validateProduct } from './utils/cart-validator.js';
 
+console.log('Script loaded');
+
 class App {
   constructor() {
-    this.store = new Store({
-      cart: [],
-      user: null
+    this.init().catch(error => {
+      console.error('App initialization failed:', error);
     });
-    
-    this.modules = {
-      cart: null
-    };
-    
-    //this.init();
   }
 
   async init() {
     try {
-      // Инициализация модулей
-      this.initializeModules();
-      
-      // Загрузка данных пользователя (если нужно)
-      // await this.loadUserData();
-      
-      // Инициализация UI
-      this.setupEventListeners();
-      
+      await Promise.all([
+        this.loadUserData(),
+        this.loadHeroImage() // Новая функция для контроля загрузки изображения
+      ]);
+      console.log('App initialized successfully');
     } catch (error) {
-      this.handleGlobalError(error);
+      console.error('Initialization error:', error);
     }
   }
 
-  initializeModules() {
-    // Инициализация модуля корзины с передачей зависимостей
-    this.modules.cart = new CartModule(
-      this.store,
-      {
-        validateCart,
-        validateProduct
+  async loadHeroImage() {
+    return new Promise((resolve) => {
+      const heroImg = document.querySelector('.hero img');
+      if (heroImg.complete) {
+        resolve();
+      } else {
+        heroImg.onload = resolve;
+        heroImg.onerror = () => {
+          console.warn('Hero image failed to load');
+          resolve();
+        };
       }
-    );
+    });
   }
 
-  // async loadUserData() {
-  //   try {
-  //     const user = await API.getCurrentUser();
-  //     this.store.commit('SET_USER', user);
-  //   } catch (error) {
-  //     console.warn('Не удалось загрузить данные пользователя:', error);
-  //   }
-  // }
+  async loadUserData() {
+    try {
+      this.user = await API.getCurrentUser();
+      console.log('User loaded:', this.user);
+    } catch (error) {
+      console.error('Failed to load user:', error);
+      this.user = null;
+    }
+  }
 
   setupEventListeners() {
     document.addEventListener('notify', (event) => {
