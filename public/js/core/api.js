@@ -1,235 +1,98 @@
-// core/api.js
-import { Store } from './store.js';
-
-const API_BASE_URL = 'https://api.midnightdream.ru/v1';
-const DEFAULT_HEADERS = {
-  'Content-Type': 'application/json',
-  'Accept': 'application/json'
-};
-
-// Конфигурация окружения
-const ENV = (() => {
-  try {
-    // Для сборок (Webpack/Vite)
-    return {
-      isDevelopment: process.env.NODE_ENV === 'development',
-      isProduction: process.env.NODE_ENV === 'production'
-    };
-  } catch (e) {
-    // Fallback для чистого браузера
-    const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    return {
-      isDevelopment: isLocalhost,
-      isProduction: !isLocalhost
-    };
-  }
-})();
-
 export class API {
-  // Мок-система
-  static _mocksEnabled = false;
-  static _mockHandlers = {
-    '/auth/me': async () => ({
-    id: 1,
-    email: 'test@example.com',
-    name: 'Test User'
-  }),
-  };
+  static BASE_URL = 'http://localhost:3000/api';
+  static MOCK_MODE = false;
+  static MOCK_HANDLERS = {};
 
-  static async getCurrentUser() {
-  return this.request('/auth/me');
-}
-  
   static async request(endpoint, options = {}) {
-    // Обработка моков
-    if (this._mocksEnabled && this._mockHandlers[endpoint]) {
-      try {
-        const mockResponse = await this._mockHandlers[endpoint](options);
-        console.log(`[API Mock] ${endpoint}`, mockResponse);
-        return mockResponse;
-      } catch (error) {
-        console.error(`[API Mock Error] ${endpoint}`, error);
-        throw error;
-      }
+    // Проверка мок-режима
+    if (this.MOCK_MODE && this.MOCK_HANDLERS[endpoint]) {
+      console.log(`[MOCK] ${endpoint}`);
+      return this.MOCK_HANDLERS[endpoint](options);
     }
 
-    // Реальный запрос
-    const url = `${API_BASE_URL}${endpoint}`;
-    const headers = {
-      ...DEFAULT_HEADERS,
-      ...options.headers
-    };
-
-    // Добавляем токен авторизации
-    const token = Store.state.token;
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
+    // Конфигурация запроса
     const config = {
-      ...options,
-      headers,
-      credentials: 'include'
+      method: options.method || 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      credentials: 'include',
+      ...options
     };
+
+    if (options.body) {
+      config.body = JSON.stringify(options.body);
+    }
 
     try {
-      const response = await fetch(url, config);
+      const response = await fetch(`${this.BASE_URL}${endpoint}`, config);
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `HTTP ${response.status}`);
       }
 
       return response.json();
     } catch (error) {
-      console.error('[API Error]', error);
+      console.error(`API Error [${endpoint}]:`, error);
       throw error;
     }
   }
 
-  // ========== Auth Methods ========== //
-  static async login(credentials) {
+  // Auth Methods
+  static login(credentials) {
     return this.request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify(credentials)
+      body: credentials
     });
   }
 
-  static async register(userData) {
-    return this.request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(userData)
-    });
+  static getCurrentUser() {
+    return this.request('/users/me');
   }
 
-  static async checkAuth() {
-    return this.request('/auth/me');
+  // Product Methods
+  static getProducts(category = null) {
+    const url = category ? `/products?category=${category}` : '/products';
+    return this.request(url);
   }
 
-  static async logout() {
-    return this.request('/auth/logout', {
-      method: 'POST'
-    });
-  }
-
-  // ========== Product Methods ========== //
-  static async getProduct(id) {
-    return this.request(`/products/${id}`);
-  }
-
-  static async getProducts(params = {}) {
-    const query = new URLSearchParams(params).toString();
-    return this.request(`/products?${query}`);
-  }
-
-  static async createProduct(productData) {
-    return this.request('/products', {
-      method: 'POST',
-      body: JSON.stringify(productData)
-    });
-  }
-
-  // ========== Cart Methods ========== //
-  static async getCart() {
+  // Cart Methods
+  static getCart() {
     return this.request('/cart');
   }
 
-  static async addToCart(productId, quantity = 1) {
-    return this.request('/cart/items', {
-      method: 'POST',
-      body: JSON.stringify({ productId, quantity })
-    });
-  }
-
-  static async removeFromCart(itemId) {
-    return this.request(`/cart/items/${itemId}`, {
-      method: 'DELETE'
-    });
-  }
-
-  static async createOrder(orderData) {
-    return this.request('/orders', {
-      method: 'POST',
-      body: JSON.stringify(orderData)
-    });
-  }
-
-  // ========== User Methods ========== //
-  static async getUser(userId) {
-    return this.request(`/users/${userId}`);
-  }
-
-  static async updateProfile(userId, data) {
-    return this.request(`/users/${userId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data)
-    });
-  }
-
-  // ========== Admin Methods ========== //
-  static async adminGetOrders() {
-    return this.request('/admin/orders');
-  }
-
-  static async adminUpdateOrder(orderId, status) {
-    return this.request(`/admin/orders/${orderId}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status })
-    });
-  }
-
-  // ========== Mock System ========== //
+  // Mock System
   static enableMockMode() {
-    if (ENV.isDevelopment) {
-      this._mocksEnabled = true;
+    if (process.env.NODE_ENV === 'development' || 
+        window.location.hostname === 'localhost') {
+      this.MOCK_MODE = true;
       
-      // Базовые моки
-      this._mockHandlers = {
-        '/auth/login': async ({ body }) => {
-          const { email, password } = JSON.parse(body);
-          if (email === 'test@example.com' && password === 'password123') {
-            return {
-              token: 'mock-jwt-token',
-              user: { id: 1, email, name: 'Test User' }
-            };
-          }
-          throw new Error('Invalid credentials');
-        },
-        '/auth/me': async () => ({
+      this.MOCK_HANDLERS = {
+        '/users/me': () => ({
           id: 1,
-          email: 'test@example.com',
-          name: 'Test User'
+          name: "Test User",
+          email: "test@example.com"
         }),
-        '/products': async () => ({
+        '/products': () => ({
           products: [
-            { id: 1, name: 'Mock Product 1', price: 99.99 },
-            { id: 2, name: 'Mock Product 2', price: 199.99 }
+            { id: 1, name: "Детская куртка", price: 1999 },
+            { id: 2, name: "Игрушка", price: 599 }
           ]
         }),
-        '/cart': async () => ({
+        '/cart': () => ({
           items: [
-            { id: 1, productId: 1, quantity: 2 },
-            { id: 2, productId: 2, quantity: 1 }
+            { productId: 1, quantity: 2 }
           ],
-          total: 399.97
+          total: 3998
         })
       };
       
       console.log('[API] Mock mode activated');
     }
   }
-
-  static disableMockMode() {
-    this._mocksEnabled = false;
-    console.log('[API] Mock mode disabled');
-  }
-
-  static addMockHandler(endpoint, handler) {
-    this._mockHandlers[endpoint] = handler;
-  }
 }
 
-// Автоматически включаем моки в development
-if (ENV.isDevelopment) {
-  API.enableMockMode();
-}
+// Автоматическое включение моков в development
+API.enableMockMode();

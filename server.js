@@ -9,6 +9,13 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
+app.use('/images', express.static('public/images', {
+  setHeaders: (res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+  }
+}));
+
 // Middleware для статических файлов
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/src', express.static(path.join(__dirname, 'src')));

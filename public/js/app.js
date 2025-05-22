@@ -1,73 +1,112 @@
-import { Store } from './core/store.js';
-import { API } from './core/api.js';
-import { CartModule } from './modules/cart.module.js';
-import { validateCart, validateProduct } from './utils/cart-validator.js';
+import { API } from './api.js';
 
-console.log('Script loaded');
-
-class App {
+export class App {
   constructor() {
-    this.init().catch(error => {
-      console.error('App initialization failed:', error);
-    });
+    this.state = {
+      user: null,
+      products: [],
+      cart: null,
+      loading: true,
+      error: null
+    };
+    
+    this.init();
   }
 
   async init() {
     try {
-      await Promise.all([
-        this.loadUserData(),
-        this.loadHeroImage() // Новая функция для контроля загрузки изображения
-      ]);
-      console.log('App initialized successfully');
+      // Загрузка начальных данных
+      await this.loadInitialData();
+      
+      // Инициализация UI
+      this.render();
+      this.setupEventListeners();
+      
+      console.log('App initialized');
     } catch (error) {
-      console.error('Initialization error:', error);
+      console.error('App initialization failed:', error);
+      this.setState({ error: error.message, loading: false });
     }
   }
 
-  async loadHeroImage() {
-    return new Promise((resolve) => {
-      const heroImg = document.querySelector('.hero img');
-      if (heroImg.complete) {
-        resolve();
-      } else {
-        heroImg.onload = resolve;
-        heroImg.onerror = () => {
-          console.warn('Hero image failed to load');
-          resolve();
-        };
+  async loadInitialData() {
+    this.setState({ loading: true });
+    
+    try {
+      const [user, products, cart] = await Promise.all([
+        API.getCurrentUser(),
+        API.getProducts(),
+        API.getCart()
+      ]);
+      
+      this.setState({ user, products, cart, loading: false });
+    } catch (error) {
+      this.setState({ 
+        error: 'Не удалось загрузить данные',
+        loading: false 
+      });
+      throw error;
+    }
+  }
+
+  setState(newState) {
+    this.state = { ...this.state, ...newState };
+    this.render();
+  }
+
+  render() {
+    const { user, products, cart, loading, error } = this.state;
+    
+    // Основной рендеринг
+    document.getElementById('app').innerHTML = `
+      <header>
+        ${user ? `Привет, ${user.name}!` : 'Войдите в систему'}
+      </header>
+      
+      <main>
+        ${loading ? '<div class="loader">Загрузка...</div>' : ''}
+        ${error ? `<div class="error">${error}</div>` : ''}
+        
+        <div class="products">
+          ${products.map(p => `
+            <div class="product">
+              <h3>${p.name}</h3>
+              <p>${p.price} руб.</p>
+            </div>
+          `).join('')}
+        </div>
+      </main>
+      
+      <aside class="cart">
+        ${cart ? `Товаров: ${cart.items.length}` : 'Корзина пуста'}
+      </aside>
+    `;
+  }
+
+  setupEventListeners() {
+    // Обработчики событий UI
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('add-to-cart')) {
+        this.addToCart(e.target.dataset.id);
       }
     });
   }
 
-  async loadUserData() {
+  async addToCart(productId) {
     try {
-      this.user = await API.getCurrentUser();
-      console.log('User loaded:', this.user);
+      this.setState({ loading: true });
+      // Реальная реализация будет использовать API
+      const updatedCart = await API.addToCart(productId);
+      this.setState({ cart: updatedCart });
     } catch (error) {
-      console.error('Failed to load user:', error);
-      this.user = null;
+      this.setState({ error: 'Ошибка добавления в корзину' });
+    } finally {
+      this.setState({ loading: false });
     }
-  }
-
-  setupEventListeners() {
-    document.addEventListener('notify', (event) => {
-      this.showNotification(event.detail.message, event.detail.type);
-    });
-  }
-
-  showNotification(message, type = 'info') {
-    // Реализация показа уведомлений
-    console[type](message);
-    // Можно интегрировать с UI библиотекой уведомлений
-  }
-
-  handleGlobalError(error) {
-    console.error('Global Error:', error);
-    this.showNotification(error.message, 'error');
   }
 }
 
-// Запуск приложения
+// Инициализация приложения
 document.addEventListener('DOMContentLoaded', () => {
   new App();
 });

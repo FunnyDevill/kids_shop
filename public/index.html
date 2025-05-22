@@ -3,89 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Интернет-магазин детских товаров Kids Shop">
-  <title>Kids Shop - Детский магазин</title>
+  <title>Kids Shop</title>
 
-  <!-- Предзагрузка шрифтов -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Ресурсы -->
+  <link rel="preload" href="./images/hero-bg.webp" as="image" crossorigin="anonymous">
+  <link rel="stylesheet" href="./css/main.css">
   
-  <!-- Предзагрузка критических ресурсов -->
-  <link rel="preload" href="images/hero-bg.webp" as="image" media="(min-width: 768px)" crossorigin="anonymous">
-  <link rel="preload" href="css/main.css" as="style">
-  <link rel="preload" href="js/app.js" as="script" crossorigin="anonymous">
-  
-  <!-- Favicon -->
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-  <link rel="alternate icon" href="images/favicon.png" type="image/png">
-  
-  <!-- Основные стили -->
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/cart.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/auth.css" media="print" onload="this.media='all'">
-  
-  <!-- Предварительное подключение к доменам -->
-  <link rel="preconnect" href="https://api.midnightdream.ru" crossorigin>
+  <!-- Favicon с fallback -->
+  <link rel="icon" href="./images/favicon.ico" type="image/x-icon">
+  <link rel="alternate icon" href="./images/favicon.png" type="image/png">
 </head>
 <body>
-  <!-- Header -->
-  <header id="header" role="banner" aria-label="Шапка сайта">
-    <!-- Логотип с предзагрузкой -->
-    <img src="images/logo.svg" alt="Kids Shop" width="120" height="40" loading="eager" crossorigin="anonymous">
-  </header>
-  
-  <!-- Auth Modal -->
-  <div id="authModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Форма авторизации"></div>
-  
-  <!-- Cart Sidebar -->
-  <aside id="cartSidebar" role="complementary" aria-label="Корзина покупок"></aside>
-  
-  <!-- Main Content -->
-  <main id="main-content" role="main" aria-live="polite">
-    <!-- Hero Section с предзагруженным изображением -->
-    <section class="hero" aria-label="Главный баннер">
-      <picture>
-        <source srcset="images/hero-bg.webp" type="image/webp" crossorigin="anonymous">
-        <img src="images/hero-bg.jpg" alt="Лучшие товары для детей" 
-             width="1200" height="400" loading="eager" crossorigin="anonymous">
-      </picture>
-      <div class="hero-content">
-        <h1>Добро пожаловать в Kids Shop</h1>
-      </div>
-    </section>
-
-    <!-- Загрузочный индикатор -->
-    <div class="loading-indicator" aria-hidden="true">
-      <span class="visually-hidden">Загрузка содержимого</span>
-      <div class="spinner"></div>
+  <div id="app">
+    <!-- Динамический контент -->
+    <div class="hero">
+      <img src="./images/hero-bg.webp" 
+           alt="Детские товары" 
+           crossorigin="anonymous"
+           loading="eager"
+           width="1200"
+           height="400">
     </div>
-  </main>
-  
-  <!-- Footer -->
-  <footer id="footer" role="contentinfo" aria-label="Подвал сайта">
-    <p>&copy; 2023 Kids Shop</p>
-  </footer>
+  </div>
 
   <!-- Скрипты -->
-  <script src="js/app.js" type="module" defer crossorigin="anonymous"></script>
-  
-  <!-- Fallback для старых браузеров -->
-  <script nomodule>
-    document.body.innerHTML = `
-      <style>
-        .browser-warning {
-          padding: 2rem;
-          text-align: center;
-          font-size: 1.2rem;
-          color: #d32f2f;
-        }
-      </style>
-      <p class="browser-warning">
-        Для работы с сайтом требуется современный браузер.<br>
-        Пожалуйста, обновите ваш браузер до последней версии.
-      </p>
-    `;
+  <script type="module">
+    import { API } from './js/api.js';
+    import App from './js/app.js';
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      new App(API);
+    });
   </script>
 </body>
 </html>
